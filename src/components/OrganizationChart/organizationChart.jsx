@@ -14,8 +14,8 @@ export default function OrganizationChart(props) {
 
 				.data(props.data)
 				.parentNodeId((d) => d.pid)
-				.nodeWidth((d) => 140)
-				.nodeHeight((d) => 140)
+				.nodeWidth(() => 140)
+				.nodeHeight(() => 140)
 				.compact(false)
 				.compactMarginBetween((d) => 80)
 				.nodeContent((d) => {
@@ -24,6 +24,7 @@ export default function OrganizationChart(props) {
 					);
 				})
 				.render();
+			chart.setCentered(1024).fit().render();
 		}
 	}, [props, props.data]);
 	return (

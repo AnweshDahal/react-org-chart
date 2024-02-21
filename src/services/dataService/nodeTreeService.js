@@ -32,7 +32,7 @@ export function treeParser(data, parentAttribute = 'pid') {
  * @param {int} nodes Number of nodes to generate
  * @returns {Array} Tree Nodes Array
  */
-export function treeGeneratorUtil(nodes = 10) {
+export function treeGeneratorUtil(nodes = 5000) {
 	return new Promise((resolve, reject) => {
 		try {
 			let items = [];
