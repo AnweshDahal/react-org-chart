@@ -8,23 +8,29 @@ import _ from 'lodash';
  * @returns {Object} NodeTree from Array
  */
 export function treeParser(data, parentAttribute = 'pid') {
-	let check = _.keyBy(data, function (o) {
-		return o.id;
-	});
-	data.map((item) => {
-		if (
-			item[parentAttribute] &&
-			'children' in check[item[parentAttribute]]
-		) {
-			check[item[parentAttribute]].children.push(item);
-		} else if (item[parentAttribute]) {
-			check[item[parentAttribute]].children = [item];
-		} else {
-			item.children = [];
-		}
-	});
+    return new Promise((resolve, reject) => {
+        try {
+            let check = _.keyBy(data, function (o) {
+                return o.id;
+            });
+            data.map((item) => {
+                if (
+                    item[parentAttribute] &&
+                    'children' in check[item[parentAttribute]]
+                ) {
+                    check[item[parentAttribute]].children.push(item);
+                } else if (item[parentAttribute]) {
+                    check[item[parentAttribute]].children = [item];
+                } else {
+                    item.children = [];
+                }
+            });
 
-	return check[Object.keys(check)[0]];
+            resolve(check[Object.keys(check)[0]]);
+        } catch (e) {
+            reject(e);
+        }
+    });
 }
 
 /**
@@ -33,47 +39,47 @@ export function treeParser(data, parentAttribute = 'pid') {
  * @returns {Array} Tree Nodes Array
  */
 export function treeGeneratorUtil(nodes = 5000) {
-	return new Promise((resolve, reject) => {
-		try {
-			let items = [];
-			let titles = [
-				'Accountant',
-				'Engineer',
-				'Doctor',
-				'Teacher',
-				'Nurse',
-				'Driver',
-				'Cook',
-				'Guard',
-				'Cleaner',
-				'Clerk',
-			]; // ? Add more titles if needed
+    return new Promise((resolve, reject) => {
+        try {
+            let items = [];
+            let titles = [
+                'Accountant',
+                'Engineer',
+                'Doctor',
+                'Teacher',
+                'Nurse',
+                'Driver',
+                'Cook',
+                'Guard',
+                'Cleaner',
+                'Clerk',
+            ]; // ? Add more titles if needed
 
-			for (let i = 0; i < nodes; i++) {
-				// ? Sample Object
-				let item = {
-					id: 980 + i,
-					title: titles[Math.floor(Math.random() * titles.length)],
-					pid:
-						i === 0
-							? null
-							: items[Math.floor(Math.random() * i)].id,
-					globalUserId: '652fe97b40739536088b3b46',
-					name: 'GUS1 MICHOS',
-					email: 'GUSMICHOS@YOPMAIL.COM',
-					profileImage: '/img/user_info.png',
-					status: 1,
-					departmentId: 42,
-					departmentName: 'IT',
-					color: '#1AA59A',
-				};
-				items.push(item);
-			}
-			resolve(items);
-		} catch (e) {
-			reject(e);
-		}
-	});
+            for (let i = 0; i < nodes; i++) {
+                // ? Sample Object
+                let item = {
+                    id: 980 + i,
+                    title: titles[Math.floor(Math.random() * titles.length)],
+                    pid:
+                        i === 0
+                            ? null
+                            : items[Math.floor(Math.random() * i)].id,
+                    globalUserId: '652fe97b40739536088b3b46',
+                    name: 'GUS1 MICHOS',
+                    email: 'GUSMICHOS@YOPMAIL.COM',
+                    profileImage: '/img/user_info.png',
+                    status: 1,
+                    departmentId: 42,
+                    departmentName: 'IT',
+                    color: '#1AA59A',
+                };
+                items.push(item);
+            }
+            resolve(items);
+        } catch (e) {
+            reject(e);
+        }
+    });
 }
 
 /**
@@ -86,32 +92,38 @@ export function treeGeneratorUtil(nodes = 5000) {
  * @returns {Array} Filtered Tree
  */
 export function fetchDepthLinear(
-	data,
-	level,
-	parentId = null,
-	parentAttribute = 'pid',
-	currentLevel = 1
+    data,
+    level,
+    parentId = null,
+    parentAttribute = 'pid',
+    currentLevel = 1,
 ) {
-	if (currentLevel > level) {
-		return [];
-	}
+    return new Promise((resolve, reject) => {
+        try {
+            if (currentLevel > level) {
+                return [];
+            }
 
-	const result = [];
+            const result = [];
 
-	for (const node of data) {
-		if (node[parentAttribute] === parentId) {
-			const children = fetchDepthLinear(
-				data,
-				level,
-				node.id,
-				parentAttribute,
-				currentLevel + 1
-			);
-			result.push(node, ...children);
-		}
-	}
+            for (const node of data) {
+                if (node[parentAttribute] === parentId) {
+                    const children = fetchDepthLinear(
+                        data,
+                        level,
+                        node.id,
+                        parentAttribute,
+                        currentLevel + 1,
+                    );
+                    result.push(node, ...children);
+                }
+            }
 
-	return result;
+            resolve(result);
+        } catch (e) {
+            reject(e);
+        }
+    });
 }
 
 /**
@@ -122,36 +134,46 @@ export function fetchDepthLinear(
  * @returns {Object} Filtered NodeTree
  */
 export function fetchDepth(node, level, currentLevel = 1) {
-	// ? If no Node is passed return null
-	if (!node) {
-		return null;
-	}
+    return new Promise((resolve, reject) => {
+        try {
+            // ? If no Node is passed return null
+            if (!node) {
+                return null;
+            }
 
-	// ? if the depth limit is reached return everything
-	// ? except the children
-	if (currentLevel == level) {
-		return { label: node.label };
-	}
+            // ? if the depth limit is reached return everything
+            // ? except the children
+            if (currentLevel == level) {
+                return { label: node.label };
+            }
 
-	// ? create a holder for the new subtree
-	const subtree = { label: node.label, children: [] };
+            // ? create a holder for the new subtree
+            const subtree = { label: node.label, children: [] };
 
-	// ? if the current node has children
-	// ! i.e. the currentNode is not a leaf node
-	if (node.children) {
-		// ? For each child of the node
-		node.children.forEach((child) => {
-			// ? Recurse the depth fetch on the child node and indicate that the level has increased
-			let childSubTree = fetchDepth(child, level, currentLevel + 1);
+            // ? if the current node has children
+            // ! i.e. the currentNode is not a leaf node
+            if (node.children) {
+                // ? For each child of the node
+                node.children.forEach((child) => {
+                    // ? Recurse the depth fetch on the child node and indicate that the level has increased
+                    let childSubTree = fetchDepth(
+                        child,
+                        level,
+                        currentLevel + 1,
+                    );
 
-			// ? After the recursion if a child exist push the node
-			if (childSubTree) {
-				subtree.children.push(childSubTree);
-			}
-		});
-	}
+                    // ? After the recursion if a child exist push the node
+                    if (childSubTree) {
+                        subtree.children.push(childSubTree);
+                    }
+                });
+            }
 
-	return subtree;
+            resolve(subtree);
+        } catch (e) {
+            reject(e);
+        }
+    });
 }
 
 /**
@@ -161,25 +183,31 @@ export function fetchDepth(node, level, currentLevel = 1) {
  * @returns {int} depth
  */
 export function depthCalculator(node, currentDepth = 1) {
-	// ? if the node does not have any child return the current depth
-	if (!node.children) {
-		return currentDepth;
-	}
+    return new Promise((resolve, reject) => {
+        try {
+            // ? if the node does not have any child return the current depth
+            if (!node.children) {
+                return currentDepth;
+            }
 
-	// ? New depth calculated form the children
-	let newDepth = 0;
+            // ? New depth calculated form the children
+            let newDepth = 0;
 
-	node.children.forEach((child) => {
-		// ? Depth of current child
-		let temp = depthCalculator(child, currentDepth + 1);
-		// ? if the depth of this child is greater than previous one
-		if (temp > newDepth) {
-			newDepth = temp;
-		}
-	});
+            node.children.forEach((child) => {
+                // ? Depth of current child
+                let temp = depthCalculator(child, currentDepth + 1);
+                // ? if the depth of this child is greater than previous one
+                if (temp > newDepth) {
+                    newDepth = temp;
+                }
+            });
 
-	// ? New Depth
-	return newDepth;
+            // ? New Depth
+            resolve(newDepth);
+        } catch (e) {
+            reject(e);
+        }
+    });
 }
 
 /**
@@ -189,14 +217,20 @@ export function depthCalculator(node, currentDepth = 1) {
  * @returns
  */
 export function depthCalculatorLinear(data, parentId = null) {
-	let maxDepth = 0;
+    return new Promise((resolve, reject) => {
+        try {
+            let maxDepth = 0;
 
-	for (const node of data) {
-		if (node.pid === parentId) {
-			const depth = 1 + depthCalculatorLinear(data, node.id);
-			maxDepth = Math.max(maxDepth, depth);
-		}
-	}
+            for (const node of data) {
+                if (node.pid === parentId) {
+                    const depth = 1 + depthCalculatorLinear(data, node.id);
+                    maxDepth = Math.max(maxDepth, depth);
+                }
+            }
 
-	return maxDepth;
+            resolve(maxDepth);
+        } catch (e) {
+            reject(e);
+        }
+    });
 }
