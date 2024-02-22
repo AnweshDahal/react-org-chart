@@ -5,7 +5,7 @@ import _ from 'lodash';
  * Parses a Linear Tree structure to NodeTree Structure.
  * The parent attribute will be set according to parentAttribute argument
  * @param {Array} data Array of Nodes
- * @returns {Object} NodeTree from Array
+ * @returns {Promise<Object>} NodeTree from Array
  */
 export function treeParser(data, parentAttribute = 'pid') {
     return new Promise((resolve, reject) => {
@@ -36,7 +36,7 @@ export function treeParser(data, parentAttribute = 'pid') {
 /**
  * Generates an Array of Nodes for the Org Chart
  * @param {int} nodes Number of nodes to generate
- * @returns {Array} Tree Nodes Array
+ * @returns {Promise<Array>} Tree Nodes Array
  */
 export function treeGeneratorUtil(nodes = 5000) {
     return new Promise((resolve, reject) => {
@@ -89,7 +89,7 @@ export function treeGeneratorUtil(nodes = 5000) {
  * @param {any} parentId Parent Id to look for, this is used for recursion
  * @param {any} parentAttribute Attribute that holds the parent ID
  * @param {int} currentLevel The current level of the Node, This is used for recursion ony
- * @returns {Array} Filtered Tree
+ * @returns {Promise<Array>} Filtered Tree
  */
 export function fetchDepthLinear(
     data,
@@ -131,7 +131,7 @@ export function fetchDepthLinear(
  * @param {Object} node Root Node
  * @param {int} level Level upto which you want to extract
  * @param {int} currentLevel The current level of the Node, This is used for recursion ony
- * @returns {Object} Filtered NodeTree
+ * @returns {Promise<Object>} Filtered NodeTree
  */
 export function fetchDepth(node, level, currentLevel = 1) {
     return new Promise((resolve, reject) => {
@@ -180,7 +180,7 @@ export function fetchDepth(node, level, currentLevel = 1) {
  * Calculates the depth of the NodeTree
  * @param {Object} node Root Node
  * @param {int} currentDepth The current depth of calculation used for recursion
- * @returns {int} depth
+ * @returns {Promise<int>} depth
  */
 export function depthCalculator(node, currentDepth = 1) {
     return new Promise((resolve, reject) => {
@@ -214,7 +214,7 @@ export function depthCalculator(node, currentDepth = 1) {
  * Calculates the depth of the node array
  * @param {Array]} data Array of nodes
  * @param {any} parentId Id of Parent
- * @returns
+ * @returns {Promise<int>} Depth of the linear Array
  */
 export function depthCalculatorLinear(data, parentId = null) {
     return new Promise((resolve, reject) => {
